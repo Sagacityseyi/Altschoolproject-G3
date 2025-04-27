@@ -1,6 +1,9 @@
 from fastapi import FastAPI, status, HTTPException, File, UploadFile, Form
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Annotated
+import uuid
+import os
+
 
 app = FastAPI()
 
@@ -29,14 +32,14 @@ students : list[student] = []
 teachers : list[teacher] = []
 assignments : dict[Assignment] = {}
       
-#POST methode to register a student
+#POST method to register a student
 @app.post("/students", status_code=status.HTTP_201_CREATED)
 def register_student(user: student):
       create_student = user.model_dump()
       students.append(create_student)
       return {"Message": "Registration completed!", "data": create_student}
       
-#POST methode to register a teacher
+#POST method to register a teacher
 @app.post("/teachers", status_code=status.HTTP_201_CREATED)
 def register_teacher(user: teacher):
       create_teacher = user.model_dump()
@@ -54,15 +57,20 @@ async def submit_assignment(
       ):
       
       assignment_id = len(assignments) + 1
-      file.filename = (name + str(assignment_id))
-      assignment_data = {
-            "id" : assignment_id ,
-            "name" : name,
-            "subject" : subject,
-            "description" : description,
-            "file name" : file.filename
-            }
-      assignments[assignment_data["id"]] = assignment_data
+      filename = f"{name}-{assignment_id}-{file.filename}"
+      file_path = f"assignments/{filename}"
+      os.makedirs("assignments", exist_ok=True)
+      with open(file_path, "wb") as f:
+            f.write(await file.read())
+
+      assignment_data = Assignment(
+            id=assignment_id,
+            student_name=name,
+            subject=subject,
+            description=description,
+            filename=filename
+      )
+      assignments[assignment_id] = assignment_data
       return {"Message": "Assignment submitted successfully"}
 
 
