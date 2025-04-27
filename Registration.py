@@ -51,9 +51,9 @@ async def submit_assignment(
       description: Annotated[str, Form()],
       file: UploadFile
       ):
-
-      file.filename = (name + str(assignment_id))
+      
       assignment_id = len(assignments) + 1
+      file.filename = (name + str(assignment_id))
       assignment_data = {
             "id" : assignment_id ,
             "name" : name,
