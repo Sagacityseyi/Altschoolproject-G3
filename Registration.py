@@ -22,6 +22,7 @@ class Assignment (BaseModel):
       subject: str
       description: str
       filename: str
+      teacher_comment: Optional[str] = None
 
 #student, teacher and assignment database
 students : list[student] = []
@@ -91,3 +92,13 @@ def get_student_assignments_by_name(name: str):
       if not student_assignments:
             raise HTTPException(status_code=404, detail="No assignments found for this student")
       return student_assignments
+
+
+#Teacher adds a comment to an assignment
+@app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_200_OK)
+def add_teacher_comment (assignment_id: int, comment: str):
+      assignment = assignments.get(assignment_id)
+      if not assignment:
+            raise HTTPException(status_code=404,detail ="Assignment not found")
+      assignment["teacher_comment"] = comment
+      return{"message":"comment added successfully" , "assignment": assignment}
