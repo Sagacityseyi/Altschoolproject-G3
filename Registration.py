@@ -80,3 +80,14 @@ def get_teachers_list():
 @app.get("/assignments", status_code=status.HTTP_200_OK)
 def get_submitted_assignments():
       return assignments
+
+
+@app.get("/studentslist/{name}/assignmentlist", status_code=status.HTTP_200_OK)
+def get_student_assignments_by_name(name: str):
+      student_assignments = []
+      for assignment in assignments.values():
+            if assignment["name"] == name:
+                  student_assignments.append(assignment)
+      if not student_assignments:
+            raise HTTPException(status_code=404, detail="No assignments found for this student")
+      return student_assignments
