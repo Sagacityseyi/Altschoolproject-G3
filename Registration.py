@@ -91,3 +91,4 @@ def get_student_assignments_by_name(name: str):
       if not student_assignments:
             raise HTTPException(status_code=404, detail="No assignments found for this student")
       return student_assignments
+
