@@ -1,6 +1,9 @@
 from fastapi import FastAPI, status, HTTPException, File, UploadFile, Form
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Annotated
+import uuid
+import os
+
 
 app = FastAPI()
 
@@ -22,20 +25,21 @@ class Assignment (BaseModel):
       subject: str
       description: str
       filename: str
+      teacher_comment: Optional[str] = None
 
 #student, teacher and assignment database
 students : list[student] = []
 teachers : list[teacher] = []
 assignments : dict[Assignment] = {}
       
-#POST methode to register a student
+#POST method to register a student
 @app.post("/students", status_code=status.HTTP_201_CREATED)
 def register_student(user: student):
       create_student = user.model_dump()
       students.append(create_student)
       return {"Message": "Registration completed!", "data": create_student}
       
-#POST methode to register a teacher
+#POST method to register a teacher
 @app.post("/teachers", status_code=status.HTTP_201_CREATED)
 def register_teacher(user: teacher):
       create_teacher = user.model_dump()
@@ -53,15 +57,20 @@ async def submit_assignment(
       ):
       
       assignment_id = len(assignments) + 1
-      file.filename = (name + str(assignment_id))
-      assignment_data = {
-            "id" : assignment_id ,
-            "name" : name,
-            "subject" : subject,
-            "description" : description,
-            "file name" : file.filename
-            }
-      assignments[assignment_data["id"]] = assignment_data
+      filename = f"{name}-{assignment_id}-{file.filename}"
+      file_path = f"assignments/{filename}"
+      os.makedirs("assignments", exist_ok=True)
+      with open(file_path, "wb") as f:
+            f.write(await file.read())
+
+      assignment_data = Assignment(
+            id=assignment_id,
+            student_name=name,
+            subject=subject,
+            description=description,
+            filename=filename
+      )
+      assignments[assignment_id] = assignment_data
       return {"Message": "Assignment submitted successfully"}
 
 
@@ -92,3 +101,15 @@ def get_student_assignments_by_name(name: str):
             raise HTTPException(status_code=404, detail="No assignments found for this student")
       return student_assignments
 
+<<<<<<< HEAD
+=======
+
+#Teacher adds a comment to an assignment
+@app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_200_OK)
+def add_teacher_comment (assignment_id: int, comment: str):
+      assignment = assignments.get(assignment_id)
+      if not assignment:
+            raise HTTPException(status_code=404,detail ="Assignment not found")
+      assignment["teacher_comment"] = comment
+      return{"message":"comment added successfully" , "assignment": assignment}
+>>>>>>> 5f5498c95bfde4a1f8478253c7eea019af5ac94e
