@@ -107,5 +107,5 @@ def add_teacher_comment (assignment_id: int, comment: str):
       assignment = assignments.get(assignment_id)
       if not assignment:
             raise HTTPException(status_code=404,detail ="Assignment not found")
-      assignment["teacher_comment"] = comment
-      return{"message":"comment added successfully" , "assignment": assignment}
+      assignment.teacher_comment = comment
+      return{"message":"comment added successfully" , "assignment": assignment.dict()}
