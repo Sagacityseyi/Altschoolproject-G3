@@ -101,9 +101,6 @@ def get_student_assignments_by_name(name: str):
             raise HTTPException(status_code=404, detail="No assignments found for this student")
       return student_assignments
 
-<<<<<<< HEAD
-=======
-
 #Teacher adds a comment to an assignment
 @app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_200_OK)
 def add_teacher_comment (assignment_id: int, comment: str):
@@ -112,4 +109,3 @@ def add_teacher_comment (assignment_id: int, comment: str):
             raise HTTPException(status_code=404,detail ="Assignment not found")
       assignment["teacher_comment"] = comment
       return{"message":"comment added successfully" , "assignment": assignment}
->>>>>>> 5f5498c95bfde4a1f8478253c7eea019af5ac94e
