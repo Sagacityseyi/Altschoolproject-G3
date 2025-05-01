@@ -122,7 +122,7 @@ def get_student_assignments_by_name(name: str):
     return student_assignments
 
 #Teacher adds a comment to an assignment
-@app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_200_OK)
+@app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_201_OK)
 def add_teacher_comment (assignment_id: int, comment: str):
       assignment = assignments.get(assignment_id)
       if not assignment:
