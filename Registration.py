@@ -96,15 +96,30 @@ def get_submitted_assignments():
       return assignments
 
 
+# @app.get("/studentslist/{name}/assignmentlist", status_code=status.HTTP_200_OK)
+# def get_student_assignments_by_name(name: str):
+#       student_assignments = []
+#       for assignment in assignments.values():
+#             if assignment["name"] == name:
+#                   student_assignments.append(assignment)
+#       if not student_assignments:
+#             raise HTTPException(status_code=404, detail="No assignments found for this student")
+#       return student_assignments
+
+
+
+# Get assignments for a specific student
 @app.get("/studentslist/{name}/assignmentlist", status_code=status.HTTP_200_OK)
 def get_student_assignments_by_name(name: str):
-      student_assignments = []
-      for assignment in assignments.values():
-            if assignment["name"] == name:
-                  student_assignments.append(assignment)
-      if not student_assignments:
-            raise HTTPException(status_code=404, detail="No assignments found for this student")
-      return student_assignments
+    student_assignments = [
+        assignment for assignment in assignments.values()
+        if assignment.student_name == name
+    ]
+
+    if not student_assignments:
+        raise HTTPException(status_code=404, detail="No assignments found for this student")
+
+    return student_assignments
 
 #Teacher adds a comment to an assignment
 @app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_200_OK)
