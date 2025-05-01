@@ -53,9 +53,14 @@ async def submit_assignment(
       name: Annotated[str, Form()],
       subject: Annotated[str, Form()],
       description: Annotated[str, Form()],
-      file: UploadFile
+      file: UploadFile = File(...)
       ):
-      
+
+
+      # check if student is registered
+      if not any(s["name"] == name for s in students):
+         raise HTTPException(status_code=404, detail="Student not registered")
+   
       assignment_id = len(assignments) + 1
       filename = f"{name}-{assignment_id}-{file.filename}"
       file_path = f"assignments/{filename}"
