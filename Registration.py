@@ -78,8 +78,6 @@ async def submit_assignment(
       assignments[assignment_id] = assignment_data
       return {"Message": "Assignment submitted successfully"}
 
-
-
 #To get the list of students data
 @app.get("/studentslist", status_code=status.HTTP_200_OK)
 def get_students_list():
@@ -95,19 +93,6 @@ def get_teachers_list():
 def get_submitted_assignments():
       return assignments
 
-
-# @app.get("/studentslist/{name}/assignmentlist", status_code=status.HTTP_200_OK)
-# def get_student_assignments_by_name(name: str):
-#       student_assignments = []
-#       for assignment in assignments.values():
-#             if assignment["name"] == name:
-#                   student_assignments.append(assignment)
-#       if not student_assignments:
-#             raise HTTPException(status_code=404, detail="No assignments found for this student")
-#       return student_assignments
-
-
-
 # Get assignments for a specific student
 @app.get("/studentslist/{name}/assignmentlist", status_code=status.HTTP_200_OK)
 def get_student_assignments_by_name(name: str):
@@ -122,7 +107,7 @@ def get_student_assignments_by_name(name: str):
     return student_assignments
 
 #Teacher adds a comment to an assignment
-@app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_201_OK)
+@app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_201_CREATED)
 def add_teacher_comment (assignment_id: int, comment: str):
       assignment = assignments.get(assignment_id)
       if not assignment:
