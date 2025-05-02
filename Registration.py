@@ -1,4 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, File, UploadFile, Form
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Annotated
 import uuid
@@ -119,6 +120,27 @@ def get_student_assignments_by_name(name: str):
         raise HTTPException(status_code=404, detail="No assignments found for this student")
 
     return student_assignments
+
+# Get a single assignment record by ID
+@app.get("/assignments/{assignment_id}", status_code=status.HTTP_200_OK)
+def get_assignment_by_id(assignment_id: str):
+    assignment = assignments.get(assignment_id)
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+    return assignment
+
+# Teacher downloads assignment file by ID
+@app.get("/assignments/{assignment_id}/file", status_code=status.HTTP_200_OK)
+def download_assignment_file(assignment_id: str):
+    assignment = assignments.get(assignment_id)
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+
+    file_path = f"assignments/{assignment.filename}"
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return FileResponse(path=file_path, filename=assignment.filename, media_type='application/octet-stream') #download regardless of file type
 
 # Teacher adds a comment to an assignment
 @app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_201_CREATED)
