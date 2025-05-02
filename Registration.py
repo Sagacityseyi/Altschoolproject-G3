@@ -2,6 +2,7 @@ from fastapi import FastAPI, status, HTTPException, File, UploadFile, Form
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Annotated
 import uuid
+from uuid import UUID
 import os
 
 
@@ -20,7 +21,7 @@ class teacher (BaseModel):
     
 #Data model to sumbit and extract assignment from the student  
 class Assignment (BaseModel):
-      id: int
+      id: str
       student_name: str
       subject: str
       description: str
@@ -61,13 +62,26 @@ async def submit_assignment(
       if not any(s["name"] == name for s in students):
          raise HTTPException(status_code=404, detail="Student not registered")
    
-      assignment_id = len(assignments) + 1
-      filename = f"{name}-{assignment_id}-{file.filename}"
+
+      
+      # Generate unique assignment ID
+      assignment_id = str(uuid.uuid4())
+      # Check if the file is empty
+      if file.filename == "":
+            raise HTTPException(status_code=400, detail="File is empty")
+      # Check if the file size exceeds 20 MB
+      if file.file._file.tell() > 20 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size exceeds 10 MB")
+
+      # Create unique filename
+      filename = f"{name}-{uuid.uuid4()}-{file.filename}"
       file_path = f"assignments/{filename}"
       os.makedirs("assignments", exist_ok=True)
+
       with open(file_path, "wb") as f:
             f.write(await file.read())
 
+      # Create and store the assignment data
       assignment_data = Assignment(
             id=assignment_id,
             student_name=name,
@@ -106,11 +120,12 @@ def get_student_assignments_by_name(name: str):
 
     return student_assignments
 
-#Teacher adds a comment to an assignment
+# Teacher adds a comment to an assignment
 @app.put("/assignments/{assignment_id}/comment" , status_code=status.HTTP_201_CREATED)
-def add_teacher_comment (assignment_id: int, comment: str):
+def add_teacher_comment (assignment_id: str, comment: str):
       assignment = assignments.get(assignment_id)
       if not assignment:
             raise HTTPException(status_code=404,detail ="Assignment not found")
       assignment.teacher_comment = comment
       return{"message":"comment added successfully" , "assignment": assignment.dict()}
+
