@@ -22,7 +22,6 @@ class AssignmentService:
             db: Session,
     ):
         try:
-            # Validate student exists
             student = db.query(models.Student).filter(models.Student.name == student_name).first()
             if not student:
                 logger.warning(f"Student '{student_name}' not found")
@@ -31,7 +30,6 @@ class AssignmentService:
                     detail=f"Student '{student_name}' not found"
                 )
 
-            # Validate file presence
             if not file or not file.filename:
                 logger.error("No file provided in request")
                 raise HTTPException(
