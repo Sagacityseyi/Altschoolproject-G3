@@ -1,6 +1,5 @@
 from fastapi import FastAPI, status, HTTPException, File, UploadFile, Form
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
 from typing import List, Dict, Optional, Annotated
 import uuid
 from uuid import UUID
@@ -10,24 +9,7 @@ import os
 app = FastAPI()
 
 
-#Data model to register the student information
-class student (BaseModel):
-      name: str
-      email: str
-    
-#Data model to register the teacher information  
-class teacher (BaseModel):
-      name: str
-      email: str
-    
-#Data model to sumbit and extract assignment from the student  
-class Assignment (BaseModel):
-      id: str
-      student_name: str
-      subject: str
-      description: str
-      filename: str
-      teacher_comment: Optional[str] = None
+
 
 #student, teacher and assignment database
 students : list[student] = []
