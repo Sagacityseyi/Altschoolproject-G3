@@ -10,7 +10,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-
 class TeacherService:
     @staticmethod
     def create_teacher(db: Session, teacher_in: TeacherCreate):
@@ -30,8 +29,6 @@ class TeacherService:
                     detail="Teacher email is required"
                 )
 
-
-            # Check if teacher already exists
             existing_teacher = db.query(models.Teacher).filter(
                 models.Teacher.email == teacher_in.email
             ).first()

@@ -6,7 +6,6 @@ import models,logging
 from schemas.student import StudentCreate
 
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,6 @@ class StudentService:
     @staticmethod
     def create_student(db: Session, student_in: StudentCreate):
         try:
-            # Validate input data
             if not student_in.name or not student_in.name.strip():
                 logger.error("Student name is required")
                 raise HTTPException(

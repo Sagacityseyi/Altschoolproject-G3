@@ -1,14 +1,19 @@
 import uuid
-from sqlalchemy import UUID, VARCHAR, Column, ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy import TIMESTAMP, UUID, VARCHAR, Column, ForeignKey, String, func
 from database import Base
+
 
 
 class Student(Base):
     __tablename__ = "students"
 
-    id = Column(UUID(as_uuid= True), primary_key=True, default=uuid.uuid4)
-    name = Column(VARCHAR(50), nullable= False)
-    email = Column(VARCHAR(), nullable= False, unique=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
+    name = Column(String(100), nullable=False, unique=True)
+    email = Column(String(255), nullable=False, unique=True)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
+
+    assignments = relationship("Assignment", back_populates="student", cascade="all, delete-orphan")
 
 
 class Teacher(Base):
